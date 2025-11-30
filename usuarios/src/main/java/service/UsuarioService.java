@@ -5,12 +5,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import dto.RegisterRequestDto; 
-import dto.LoginRequestDto; // Importar LoginRequestDto
+import dto.LoginRequestDto;
 
 import modelo.Usuario;
-import modelo.RolEntity; 
+import modelo.RolUsuario; 
 import repository.UsuarioRepository;
-import repository.RolRepository;
+import repository.RolUsuarioRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +22,7 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private RolRepository rolRepository;
+    private RolUsuarioRepository rolUsuarioRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder; 
@@ -36,26 +36,33 @@ public class UsuarioService {
     }
 
     public Usuario crearUsuario(RegisterRequestDto requestDto) {
-        if (usuarioRepository.findByCorreo(requestDto.getCorreo()).isPresent()) {
-            throw new RuntimeException("El correo ya está en uso"); 
+        // Usar email o correo (compatibilidad)
+        String email = requestDto.getEmail() != null ? requestDto.getEmail() : requestDto.getCorreo();
+        
+        if (usuarioRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("El email ya está en uso"); 
         }
 
         Usuario usuario = new Usuario();
         
+        usuario.setRut(requestDto.getRut());
         usuario.setNombre(requestDto.getNombre()); 
-        usuario.setCorreo(requestDto.getCorreo());
-        
-        usuario.setContraseña(passwordEncoder.encode(requestDto.getContraseña()));
+        usuario.setApellido(requestDto.getApellido());
+        usuario.setEmail(email);
+        usuario.setPassword(passwordEncoder.encode(requestDto.getContraseña()));
         usuario.setDireccion(requestDto.getDireccion());
-        usuario.setTelefono(requestDto.getTelefono());
+        usuario.setRegion(requestDto.getRegion());
+        usuario.setComuna(requestDto.getComuna());
+        usuario.setFechaNacimiento(requestDto.getFechaNacimiento());
+        usuario.setEstado("ACTIVO");
 
-        // Cambiar "USER" por "USUARIO"
+        // Asignar rol por defecto
         String rolNombre = "USUARIO"; 
-        RolEntity rol = rolRepository.findByNombre(rolNombre)
+        RolUsuario rol = rolUsuarioRepository.findByNombre(rolNombre)
                 .orElseThrow(() -> new RuntimeException("Error: Rol '" + rolNombre + "' no encontrado. " +
                                                         "Asegúrate de que el rol exista en la tabla 'roles'."));
         
-        usuario.setRole(rol);
+        usuario.setRol(rol);
 
         return usuarioRepository.save(usuario);
     }
@@ -70,14 +77,17 @@ public class UsuarioService {
         Usuario usuarioExistente = usuarioOpt.get();
         
         usuarioExistente.setNombre(usuarioDetalles.getNombre());
-        usuarioExistente.setCorreo(usuarioDetalles.getCorreo());
+        usuarioExistente.setApellido(usuarioDetalles.getApellido());
+        usuarioExistente.setEmail(usuarioDetalles.getEmail());
         
-        if (usuarioDetalles.getContraseña() != null && !usuarioDetalles.getContraseña().isEmpty()) {
-            usuarioExistente.setContraseña(passwordEncoder.encode(usuarioDetalles.getContraseña()));
+        if (usuarioDetalles.getPassword() != null && !usuarioDetalles.getPassword().isEmpty()) {
+            usuarioExistente.setPassword(passwordEncoder.encode(usuarioDetalles.getPassword()));
         }
         
         usuarioExistente.setDireccion(usuarioDetalles.getDireccion());
-        usuarioExistente.setTelefono(usuarioDetalles.getTelefono());
+        usuarioExistente.setRegion(usuarioDetalles.getRegion());
+        usuarioExistente.setComuna(usuarioDetalles.getComuna());
+        usuarioExistente.setEstado(usuarioDetalles.getEstado());
 
         return Optional.of(usuarioRepository.save(usuarioExistente));
     }
@@ -92,11 +102,14 @@ public class UsuarioService {
     }
 
     public Usuario loginUsuario(LoginRequestDto requestDto) {
-        Usuario usuario = usuarioRepository.findByCorreo(requestDto.getCorreo())
-                .orElseThrow(() -> new RuntimeException("Correo o contraseña incorrectos"));
+        // Intentar con email o correo
+        String email = requestDto.getEmail() != null ? requestDto.getEmail() : requestDto.getCorreo();
         
-        if (!passwordEncoder.matches(requestDto.getContraseña(), usuario.getContraseña())) {
-            throw new RuntimeException("Correo o contraseña incorrectos");
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email o contraseña incorrectos"));
+        
+        if (!passwordEncoder.matches(requestDto.getContraseña(), usuario.getPassword())) {
+            throw new RuntimeException("Email o contraseña incorrectos");
         }
         
         return usuario;

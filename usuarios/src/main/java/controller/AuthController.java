@@ -28,11 +28,16 @@ public class AuthController {
             
             dto.UsuarioResponseDto responseDto = dto.UsuarioResponseDto.builder()
                 .id(nuevoUsuario.getId())
+                .rut(nuevoUsuario.getRut())
                 .nombre(nuevoUsuario.getNombre())
-                .correo(nuevoUsuario.getCorreo())
+                .apellido(nuevoUsuario.getApellido())
+                .email(nuevoUsuario.getEmail())
                 .direccion(nuevoUsuario.getDireccion())
-                .telefono(nuevoUsuario.getTelefono())
-                .rol(nuevoUsuario.getRole().getNombre())
+                .region(nuevoUsuario.getRegion())
+                .comuna(nuevoUsuario.getComuna())
+                .fechaNacimiento(nuevoUsuario.getFechaNacimiento())
+                .estado(nuevoUsuario.getEstado())
+                .rol(nuevoUsuario.getRol().getNombre())
                 .build();
             
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
@@ -54,8 +59,8 @@ public class AuthController {
             LoginResponseDto responseDto = LoginResponseDto.builder()
                 .id(usuario.getId())
                 .nombre(usuario.getNombre())
-                .correo(usuario.getCorreo())
-                .rol(usuario.getRole().getNombre())
+                .email(usuario.getEmail())
+                .rol(usuario.getRol().getNombre())
                 .token("token-" + usuario.getId()) // Token simple (implementar JWT después)
                 .build();
             

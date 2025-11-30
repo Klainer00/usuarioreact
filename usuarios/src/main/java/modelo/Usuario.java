@@ -18,43 +18,56 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "usuarios")
-public class Usuario implements UserDetails { 
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nombre;
-
     @Column(unique = true, nullable = false)
-    private String correo;
+    private String rut;
 
     @Column(nullable = false)
-    private String contraseña;
+    private String nombre;
+
+    @Column(nullable = false)
+    private String apellido;
+
+    @Column(name = "fecha_nacimiento")
+    private String fechaNacimiento;
+
+    @Column(unique = true, nullable = false)
+    private String email;
 
     private String direccion;
 
-    private String telefono;
+    private String region;
 
+    private String comuna;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
+    private String estado;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rol_id", nullable = false)
-    private RolEntity role;
+    private RolUsuario rol;
 
-    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.getNombre()));
+        return List.of(new SimpleGrantedAuthority(rol.getNombre()));
     }
 
     @Override
     public String getPassword() {
-        return contraseña;
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return correo;
+        return email;
     }
 
     @Override

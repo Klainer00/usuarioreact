@@ -21,7 +21,8 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> usuarioRepository.findByCorreo(username)
+        return username -> usuarioRepository.findByEmail(username)
+                .or(() -> usuarioRepository.findByRut(username))
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
     }
 

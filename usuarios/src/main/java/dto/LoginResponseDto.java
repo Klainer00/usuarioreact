@@ -8,7 +8,8 @@ import lombok.Data;
 public class LoginResponseDto {
     private Long id;
     private String nombre;
-    private String correo;
+    private String email;
+    private String correo; // Para compatibilidad
     private String rol;
     private String token;
 }

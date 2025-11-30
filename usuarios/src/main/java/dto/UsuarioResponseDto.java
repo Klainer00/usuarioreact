@@ -11,9 +11,14 @@ import lombok.Builder;
 @Builder
 public class UsuarioResponseDto {
     private Long id;
+    private String rut;
     private String nombre;
-    private String correo;
+    private String apellido;
+    private String email;
     private String direccion;
-    private String telefono;
+    private String region;
+    private String comuna;
+    private String fechaNacimiento;
     private String rol;
+    private String estado;
 }
