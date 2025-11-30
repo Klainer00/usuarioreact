@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,6 +36,7 @@ public class Usuario implements UserDetails {
     private String apellido;
 
     @Column(name = "fecha_nacimiento")
+    @JsonProperty("fecha_nacimiento") 
     private String fechaNacimiento;
 
     @Column(unique = true, nullable = false)
@@ -57,6 +60,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (rol == null) return List.of();
         return List.of(new SimpleGrantedAuthority(rol.getNombre()));
     }
 
