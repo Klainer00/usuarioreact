@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,7 +34,8 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private String apellido;
 
-    @Column(name = "fecha_nacimiento")
+    @Column(name = "fecha_nacimiento")        // Para la Base de Datos
+    @JsonProperty("fecha_nacimiento")         // Para leer el JSON de React
     private String fechaNacimiento;
 
     @Column(unique = true, nullable = false)
