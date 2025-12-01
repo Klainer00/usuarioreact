@@ -16,6 +16,6 @@ public class RolEntity {
     @Column(nullable = false, unique = true)
     private String nombre; 
 
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "rol")
     private Set<Usuario> usuarios;
 }
