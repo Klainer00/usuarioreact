@@ -23,7 +23,7 @@ public class AuthController {
     private final UsuarioService usuarioService;
 
     @PostMapping("/register")
-    public ResponseEntity<dto.UsuarioResponseDto> register(@RequestBody RegisterRequestDto requestDto) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequestDto requestDto) {
         try {
             Usuario nuevoUsuario = usuarioService.crearUsuario(requestDto); 
             
@@ -44,16 +44,26 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
             
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+            dto.ErrorResponseDto errorDto = dto.ErrorResponseDto.builder()
+                .mensaje(e.getMessage())
+                .codigo("CONFLICT")
+                .status(409)
+                .build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDto);
         } catch (Exception e) {
             System.err.println("Error en registro: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            dto.ErrorResponseDto errorDto = dto.ErrorResponseDto.builder()
+                .mensaje("Error interno del servidor: " + e.getMessage())
+                .codigo("INTERNAL_ERROR")
+                .status(500)
+                .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDto);
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto) {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto requestDto) {
         try {
             Usuario usuario = usuarioService.loginUsuario(requestDto);
             
@@ -68,11 +78,21 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.OK).body(responseDto);
             
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            dto.ErrorResponseDto errorDto = dto.ErrorResponseDto.builder()
+                .mensaje("Credenciales inválidas: " + e.getMessage())
+                .codigo("UNAUTHORIZED")
+                .status(401)
+                .build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDto);
         } catch (Exception e) {
             System.err.println("Error en login: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            dto.ErrorResponseDto errorDto = dto.ErrorResponseDto.builder()
+                .mensaje("Error interno del servidor: " + e.getMessage())
+                .codigo("INTERNAL_ERROR")
+                .status(500)
+                .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDto);
         }
     }
 }

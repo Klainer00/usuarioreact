@@ -39,8 +39,15 @@ public class UsuarioService {
         // Usar email o correo (compatibilidad)
         String email = requestDto.getEmail() != null ? requestDto.getEmail() : requestDto.getCorreo();
         
+        // Verificar si el email ya existe
         if (usuarioRepository.findByEmail(email).isPresent()) {
-            throw new RuntimeException("El email ya está en uso"); 
+            throw new IllegalArgumentException("El email ya está en uso"); 
+        }
+        
+        // Verificar si el RUT ya existe
+        Optional<Usuario> usuarioPorRut = usuarioRepository.findByRut(requestDto.getRut());
+        if (usuarioPorRut.isPresent()) {
+            throw new IllegalArgumentException("El RUT ya está registrado");
         }
 
         Usuario usuario = new Usuario();
@@ -59,12 +66,19 @@ public class UsuarioService {
         // Asignar rol por defecto
         String rolNombre = "USUARIO"; 
         RolUsuario rol = rolUsuarioRepository.findByNombre(rolNombre)
-                .orElseThrow(() -> new RuntimeException("Error: Rol '" + rolNombre + "' no encontrado. " +
+                .orElseThrow(() -> new IllegalArgumentException("Error: Rol '" + rolNombre + "' no encontrado. " +
                                                         "Asegúrate de que el rol exista en la tabla 'roles'."));
         
         usuario.setRol(rol);
-
-        return usuarioRepository.save(usuario);
+        
+        try {
+            Usuario usuarioGuardado = usuarioRepository.save(usuario);
+            System.out.println("Usuario registrado exitosamente: " + usuarioGuardado.getEmail());
+            return usuarioGuardado;
+        } catch (Exception e) {
+            System.err.println("Error al guardar usuario: " + e.getMessage());
+            throw new RuntimeException("Error al registrar el usuario", e);
+        }
     }
 
     public Optional<Usuario> actualizarUsuario(Long id, Usuario usuarioDetalles) {
