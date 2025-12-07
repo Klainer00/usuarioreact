@@ -1,0 +1,63 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ecommerce-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000" # Permitir frontend React
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+      routes:
+        # Auth Service
+        - id: auth-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+
+        # Productos Service
+        - id: productos-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/productos/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - name: CustomAuthFilter # Filtro de autenticación centralizado
+
+        # Pedidos Service
+        - id: pedidos-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/pedidos/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - name: CustomAuthFilter # Filtro de autenticación centralizado
+
+        # Contacto Service
+        - id: contacto-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/contacto/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - name: CustomAuthFilter # Filtro de autenticación centralizado
+            - name: RequestRateLimiter # Rate Limiting
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                key-resolver: "#{@ipAddressResolver}"
+
+# Configuración de WebClient para la validación de JWT
+auth-service.url: http://localhost:8081/auth/validate
