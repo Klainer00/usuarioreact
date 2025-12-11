@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -22,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class PedidoService {
     private final WebClient webClientProductos;
 
     @Transactional
-    public PedidoDTO crearPedido(PedidoDTO pedidoDTO, Long usuarioId) {
+    public PedidoDTO crearPedido(PedidoDTO pedidoDTO, long usuarioId) {
         // 1. Validar y obtener información de los productos
         List<DetallePedido> detalles = new ArrayList<>();
         BigDecimal totalPedido = BigDecimal.ZERO;
@@ -77,34 +77,35 @@ public class PedidoService {
         detalles.forEach(d -> d.setPedido(pedido));
 
         // 3. Guardar el Pedido
-        pedido = pedidoRepository.save(pedido);
+        Pedido pedidoGuardado = pedidoRepository.save(pedido);
 
         // 4. Reducir el stock (Comunicación con Productos Service)
         for (DetallePedido detalle : detalles) {
             webClientProductos.put()
                     .uri("/{id}/reducir-stock?cantidad={cantidad}", detalle.getProductoId(), detalle.getCantidad())
                     .retrieve()
-                    .onStatus(HttpStatus::isError, clientResponse ->
-                            Mono.error(new RuntimeException("Error al reducir stock para producto ID: " + detalle.getProductoId())))
+                // The onStatus predicate expects a Predicate<HttpStatusCode>, so use a lambda to call isError()
+                .onStatus(status -> status.isError(), clientResponse ->
+                    Mono.error(new RuntimeException("Error al reducir stock para producto ID: " + detalle.getProductoId())))
                     .bodyToMono(Void.class)
                     .block();
         }
 
-        return toDTO(pedido);
+        return toDTO(pedidoGuardado);
     }
 
     // Listar pedidos del usuario autenticado (Paginación)
-    public Page<PedidoDTO> listarMisPedidos(Long usuarioId, int page, int size) {
+    public Page<PedidoDTO> listarMisPedidos(long usuarioId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return pedidoRepository.findByUsuarioId(usuarioId, pageable).map(this::toDTO);
     }
 
     // Obtener un pedido por ID (solo si pertenece al usuario)
-    public PedidoDTO obtenerPedidoPorId(Long id, Long usuarioId) {
+    public PedidoDTO obtenerPedidoPorId(long id, long usuarioId) {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Pedido no encontrado con ID: " + id));
 
-        if (!pedido.getUsuarioId().equals(usuarioId)) {
+        if (!Objects.equals(pedido.getUsuarioId(), usuarioId)) {
             throw new SecurityException("Acceso denegado. El pedido no pertenece al usuario.");
         }
 
@@ -119,7 +120,7 @@ public class PedidoService {
 
     // Actualizar estado del pedido (ADMIN)
     @Transactional
-    public PedidoDTO actualizarEstadoPedido(Long id, EstadoPedido nuevoEstado) {
+    public PedidoDTO actualizarEstadoPedido(long id, EstadoPedido nuevoEstado) {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Pedido no encontrado con ID: " + id));
 

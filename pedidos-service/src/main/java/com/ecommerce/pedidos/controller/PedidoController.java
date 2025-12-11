@@ -20,14 +20,14 @@ public class PedidoController {
     // POST /pedidos
     @PostMapping
     public ResponseEntity<PedidoDTO> crearPedido(@Valid @RequestBody PedidoDTO pedidoDTO,
-                                                 @RequestHeader("X-User-ID") Long usuarioId) {
+                                                 @RequestHeader("X-User-ID") long usuarioId) {
         return new ResponseEntity<>(pedidoService.crearPedido(pedidoDTO, usuarioId), HttpStatus.CREATED);
     }
 
     // GET /pedidos (mis pedidos)
     @GetMapping
     public ResponseEntity<Page<PedidoDTO>> listarMisPedidos(
-            @RequestHeader("X-User-ID") Long usuarioId,
+            @RequestHeader("X-User-ID") long usuarioId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Page<PedidoDTO> pedidos = pedidoService.listarMisPedidos(usuarioId, page, size);
@@ -37,8 +37,8 @@ public class PedidoController {
     // GET /pedidos/{id}
     @GetMapping("/{id}")
     public ResponseEntity<PedidoDTO> obtenerPedido(
-            @PathVariable Long id,
-            @RequestHeader("X-User-ID") Long usuarioId) {
+            @PathVariable long id,
+            @RequestHeader("X-User-ID") long usuarioId) {
         return ResponseEntity.ok(pedidoService.obtenerPedidoPorId(id, usuarioId));
     }
 
@@ -56,7 +56,7 @@ public class PedidoController {
     // PUT /admin/pedidos/{id}/estado (ADMIN)
     @PutMapping("/admin/{id}/estado")
     public ResponseEntity<PedidoDTO> actualizarEstadoPedido(
-            @PathVariable Long id,
+            @PathVariable long id,
             @RequestParam EstadoPedido estado) {
         return ResponseEntity.ok(pedidoService.actualizarEstadoPedido(id, estado));
     }

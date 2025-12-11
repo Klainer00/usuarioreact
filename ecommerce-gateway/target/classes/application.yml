@@ -59,5 +59,15 @@ spring:
                 redis-rate-limiter.burstCapacity: 20
                 key-resolver: "#{@ipAddressResolver}"
 
+        # Usuario Service (NUEVA RUTA AGREGADA)
+        # Redirige /api/usuarios hacia el Auth Service (8081)
+        - id: usuario-service
+          uri: http://localhost:8081 
+          predicates:
+            - Path=/api/usuarios/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - name: CustomAuthFilter
+
 # Configuración de WebClient para la validación de JWT
 auth-service.url: http://localhost:8081/auth/validate
