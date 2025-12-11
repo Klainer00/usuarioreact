@@ -1,0 +1,17 @@
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\config\ApplicationConfig.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\config\SecurityConfig.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\controller\AuthController.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\controller\UsuarioController.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\dto\LoginRequestDto.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\dto\LoginResponseDto.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\dto\RegisterRequestDto.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\dto\UsuarioResponseDto.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\gestionUsaurios\usuarios\UsuariosApplication.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\modelo\Rol.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\modelo\RolEntity.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\modelo\RolUsuario.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\modelo\Usuario.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\repository\RolRepository.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\repository\RolUsuarioRepository.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\repository\UsuarioRepository.java
+C:\Users\pishi\Documents\GitHub\usuarioreact\usuarios\src\main\java\service\UsuarioService.java
