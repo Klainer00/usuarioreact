@@ -17,11 +17,10 @@ public class ProductosServiceApplication {
 		SpringApplication.run(ProductosServiceApplication.class, args);
 	}
 
-	// Este método se ejecuta automáticamente al iniciar la aplicación
 	@Bean
 	public CommandLineRunner initData(ProductoRepository repository) {
 		return args -> {
-			// Solo insertamos datos si la tabla está vacía
+			// Solo inserta si la tabla está vacía
 			if (repository.count() == 0) {
 				List<Producto> productos = List.of(
 					Producto.builder()
@@ -79,9 +78,8 @@ public class ProductosServiceApplication {
 						.activo(true)
 						.build()
 				);
-
 				repository.saveAll(productos);
-				System.out.println("✅ Productos de prueba insertados automáticamente en la base de datos.");
+				System.out.println("✅ PRODUCTOS CARGADOS AUTOMÁTICAMENTE");
 			}
 		};
 	}
