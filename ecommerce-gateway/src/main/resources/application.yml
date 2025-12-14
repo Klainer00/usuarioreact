@@ -25,7 +25,7 @@ spring:
           predicates:
             - Path=/api/auth/**
           filters:
-            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/(?<segment>.* ), /$\{segment}
 
         # Productos Service
         - id: productos-service
@@ -33,7 +33,7 @@ spring:
           predicates:
             - Path=/api/productos/**
           filters:
-            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/(?<segment>.* ), /$\{segment}
             - name: CustomAuthFilter # Filtro de autenticación centralizado
 
         # Pedidos Service
@@ -42,7 +42,7 @@ spring:
           predicates:
             - Path=/api/pedidos/**
           filters:
-            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/(?<segment>.* ), /$\{segment}
             - name: CustomAuthFilter # Filtro de autenticación centralizado
 
         # Contacto Service
@@ -51,13 +51,9 @@ spring:
           predicates:
             - Path=/api/contacto/**
           filters:
-            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/(?<segment>.* ), /$\{segment}
             - name: CustomAuthFilter # Filtro de autenticación centralizado
-            - name: RequestRateLimiter # Rate Limiting
-              args:
-                redis-rate-limiter.replenishRate: 10
-                redis-rate-limiter.burstCapacity: 20
-                key-resolver: "#{@ipAddressResolver}"
+            # Se eliminó el RequestRateLimiter que requería Redis y causaba el fallo de arranque.
 
         # Usuario Service (NUEVA RUTA AGREGADA)
         # Redirige /api/usuarios hacia el Auth Service (8081)
@@ -66,7 +62,7 @@ spring:
           predicates:
             - Path=/api/usuarios/**
           filters:
-            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/(?<segment>.* ), /$\{segment}
             - name: CustomAuthFilter
 
 # Configuración de WebClient para la validación de JWT
