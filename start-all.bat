@@ -2,6 +2,9 @@
 rem Abre nuevas ventanas y arranca cada servicio con mvn spring-boot:run
 setlocal enabledelayedexpansion
 
+set MAVEN_HOME=C:\tools\apache-maven-3.9.11
+set PATH=%MAVEN_HOME%\bin;%PATH%
+
 start "auth-service" cmd /k "cd auth-service && mvn -DskipTests spring-boot:run"
 start "productos-service" cmd /k "cd productos-service && mvn -DskipTests spring-boot:run"
 start "pedidos-service" cmd /k "cd pedidos-service && mvn -DskipTests spring-boot:run"
